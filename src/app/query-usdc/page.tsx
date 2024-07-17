@@ -3,9 +3,6 @@ import { useEffect, useState } from 'react';
 import { createPublicClient, http } from 'viem'
 import { mainnet } from 'viem/chains'
 
-console.log(process.env.NEXT_INFURA_PROJECT_ID);
-
-
 const client = createPublicClient({
     chain: mainnet,
     transport: http(`https://mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_PROJECT_ID}`),
@@ -47,13 +44,16 @@ const QueryUsdcPage = () => {
         <div className='text-gray-400 mb-2'>
             最新的 block 为: {lastBlock || ''}，共查询到 {list.length} 条记录
         </div>
-        <ul className='list-disc pl-4'>
-            {list.map((item: any, index: number) => {
-                return <li key={index}>
-                    从 {item.args.from} 转账给 {item.args.to} {parseInt(item.args.value) / 1000000} USDC ,交易ID：{item.transactionHash}
-                </li>
-            })}
-        </ul>
+        {
+            list.length === 0 ? <div className='text-gray-600'>正在查询中，请稍候……</div> : 
+            <ul className='list-disc pl-4'>
+                {list.map((item: any, index: number) => {
+                    return <li key={index}>
+                        从 {item.args.from} 转账给 {item.args.to} {parseInt(item.args.value) / 1000000} USDC ,交易ID：{item.transactionHash}
+                    </li>
+                })}
+            </ul>
+        }
     </div>
 }
 export default QueryUsdcPage;
