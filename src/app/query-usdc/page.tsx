@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { createPublicClient, http, parseAbiItem } from 'viem'
+import { createPublicClient, http } from 'viem'
 import { mainnet } from 'viem/chains'
 
 console.log(process.env.NEXT_INFURA_PROJECT_ID);
@@ -13,7 +13,7 @@ const client = createPublicClient({
 
 const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606EB48';
 
-const queryUsdcPage = () => {
+const QueryUsdcPage = () => {
     const [lastBlock, setLastBlock] = useState<number>(0);
     const [list, setList] = useState<any[]>([]);
     useEffect(() => {
@@ -56,4 +56,4 @@ const queryUsdcPage = () => {
         </ul>
     </div>
 }
-export default queryUsdcPage
+export default QueryUsdcPage;
