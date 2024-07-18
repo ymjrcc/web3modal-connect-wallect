@@ -15,25 +15,19 @@ const QueryUSDTPage = () => {
     const [lashBlockHash, setLastBlockHash] = useState<string>('');
     const [list, setList] = useState<any[]>([]);
 
-    const getBlock = async () => {
-        // 获取最新的区块高度
-        client.getBlock().then((res) => {
-            console.log(res);
-            setLastBlock(Number(res.number));
-            setLastBlockHash(res.hash);
-        })
-
-    }
-
     useEffect(() => {
-        getBlock();
-        setInterval(() => {
-            getBlock();
-        }, 5000);
+        // 监听最新区块
+        client.watchBlocks({
+            emitOnBegin: true,
+            onBlock(block) {
+                setLastBlock(Number(block.number));
+                setLastBlockHash(block.hash);
+            }
+        })
     }, [])
     useEffect(() => {
         setList([]);
-        // 获取最新的100个区块内的 USDT Transfer 记录
+        // 获取最新区块内的 USDT Transfer 记录
         client.getLogs({
             address: USDT_ADDRESS,
             event: parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 value)'),
