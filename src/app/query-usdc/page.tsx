@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { createPublicClient, http } from 'viem'
+import { createPublicClient, http, parseAbiItem } from 'viem'
 import { mainnet } from 'viem/chains'
 
 const client = createPublicClient({
@@ -23,15 +23,7 @@ const QueryUsdcPage = () => {
         // 获取最新的100个区块内的 USDC Transfer 记录
         client.getLogs({
             address: USDC_ADDRESS,
-            event: {
-                type: 'event',
-                name: 'Transfer',
-                inputs: [
-                    { type: 'address', name: 'from', indexed: true },
-                    { type: 'address', name: 'to', indexed: true },
-                    { type: 'uint256', name: 'value' }
-                ]
-            },
+            event: parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 value)'),
             fromBlock: BigInt(lastBlock > 100 ? lastBlock - 100 : 0),
             toBlock: BigInt(lastBlock)
         }).then((res) => {
@@ -40,9 +32,9 @@ const QueryUsdcPage = () => {
         })
     }, [lastBlock])
     return <div className='p-4'>
-        <h1 className='text-2xl text-center mb-4'>查询Ethereum链上最近100个区块链内的 USDC Transfer记录</h1>
+        <h1 className='text-2xl text-center mb-4'>查询 Ethereum 链上最近 100 个区块链内的 USDC Transfer 记录</h1>
         <div className='text-gray-400 mb-2'>
-            最新的 block 为: {lastBlock || ''}，共查询到 {list.length} 条记录
+            最新的区块为: {lastBlock || ''}，最近 100 个区块共查询到 {list.length} 条记录
         </div>
         {
             list.length === 0 ? <div className='text-gray-600'>正在查询中，请稍候……</div> : 
