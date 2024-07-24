@@ -87,17 +87,37 @@ const GetStorageAt = () => {
     useEffect(() => {
         // 获取 _locks 的数据
         if(length === 0) return
-        const _list: any = []
-        for(let i = 0; i < length; i++) {
-            getStorageByIndex(i).then(res => {
-              const [startTime, user, amount] = res
-              _list.push(res)
-              console.log(_list);
-              if(_list.length === length) {
-                setList(_list.sort((a: any, b: any) => b[0] - a[0]))
-              }
-            })
-        }
+
+        const idxs = Array.from(Array(11).keys()); // 要请求的 index 列表
+
+        const fetchSequentially = async () => {
+          const newResults = new Array(idxs.length).fill(null);
+          const promises = idxs.map(async (idx, index) => {
+            try {
+              const result = await getStorageByIndex(idx);
+              newResults[index] = result;
+              setList([...newResults]);
+            } catch (err) {
+              console.error(`Error fetching data for index ${idx}:`, err);
+            }
+          });
+
+          await Promise.all(promises);
+        };
+
+        fetchSequentially();
+
+        // const _list: any = []
+        // for(let i = 0; i < length; i++) {
+        //     getStorageByIndex(i).then(res => {
+        //       const [startTime, user, amount] = res
+        //       _list.push(res)
+        //       console.log(_list);
+        //       if(_list.length === length) {
+        //         setList(_list.sort((a: any, b: any) => b[0] - a[0]))
+        //       }
+        //     })
+        // }
         
     }, [length])
     return <div className='p-4'>
@@ -113,6 +133,7 @@ const GetStorageAt = () => {
             {
               list.length === 0 ? <div>正在查询中，请稍候……</div> :
               list.map((item: any, index: number) => {
+                  if(!item) return null
                   return <li key={index}>
                       locks[{index}]: user: {item[1]}, startTime:{item[0]}, amount:{item[2]}
                   </li>
